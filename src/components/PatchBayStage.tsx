@@ -75,7 +75,7 @@ export const PatchBayStage: React.FC = () => {
   return (
     <div 
       ref={stageRef}
-      className="w-full h-full relative cursor-grab active:cursor-grabbing overflow-hidden patch-bay-stage"
+      className="patch-bay-stage"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -89,7 +89,7 @@ export const PatchBayStage: React.FC = () => {
       }}
     >
       <div 
-        className="absolute top-0 left-0 origin-top-left w-full h-full pointer-events-none"
+        className="patch-bay-canvas"
         style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}
       >
         <SvgCableLayerOverlay activeCable={activeCable} />

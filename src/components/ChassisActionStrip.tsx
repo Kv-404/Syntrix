@@ -8,11 +8,8 @@ export const ChassisActionStrip: React.FC = () => {
   const { addModule, clearCables, flushWorkbench, undo, redo, past, future } = useSynthStore();
 
   const handleSpawn = (type: ModuleType) => {
-    // eslint-disable-next-line react-hooks/purity
     const id = `${type}-${Date.now()}`;
-    // eslint-disable-next-line react-hooks/purity
     const x = 100 + Math.random() * 200;
-    // eslint-disable-next-line react-hooks/purity
     const y = 100 + Math.random() * 200;
     addModule({
       id,
@@ -36,25 +33,25 @@ export const ChassisActionStrip: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#242424] border-b border-[#333] p-2 flex items-center justify-between">
-      <div className="flex gap-2 items-center">
-        <span className="text-gray-400 text-sm mr-2">SPAWN MODULES:</span>
+    <div className="chassis-action-strip">
+      <div className="chassis-group">
+        <span className="chassis-label">SPAWN MODULES:</span>
         {(['VCO', 'VCF', 'VCA', 'LFO', 'ADSR', 'Output'] as ModuleType[]).map(type => (
           <button
             key={type}
             onClick={() => handleSpawn(type)}
-            className="flex items-center gap-1 bg-[#333] hover:bg-[#444] text-white px-3 py-1 rounded text-sm transition-colors border border-[#444] shadow-sm"
+            className="chassis-spawn-btn"
           >
             <Plus size={14} /> {type}
           </button>
         ))}
       </div>
 
-      <div className="flex gap-2 items-center">
+      <div className="chassis-group">
         <button
           onClick={() => undo()}
           disabled={past.length === 0}
-          className="p-1.5 text-gray-400 hover:text-white disabled:opacity-50 transition-colors"
+          className="chassis-icon-btn"
           title="Undo"
         >
           <Undo size={18} />
@@ -62,27 +59,27 @@ export const ChassisActionStrip: React.FC = () => {
         <button
           onClick={() => redo()}
           disabled={future.length === 0}
-          className="p-1.5 text-gray-400 hover:text-white disabled:opacity-50 transition-colors"
+          className="chassis-icon-btn"
           title="Redo"
         >
           <Redo size={18} />
         </button>
-        <div className="w-px h-6 bg-[#444] mx-2"></div>
+        <div className="chassis-divider"></div>
         <button
           onClick={() => AudioEngine.getInstance().panic()}
-          className="flex items-center gap-1 bg-red-900 hover:bg-red-800 text-red-100 px-3 py-1 rounded text-sm transition-colors border border-red-700"
+          className="chassis-panic-btn"
         >
           <VolumeX size={14} /> Panic Mute
         </button>
         <button
           onClick={() => clearCables()}
-          className="flex items-center gap-1 bg-[#333] hover:bg-[#444] text-white px-3 py-1 rounded text-sm transition-colors border border-[#444]"
+          className="chassis-btn"
         >
           Clear Cables
         </button>
         <button
           onClick={() => flushWorkbench()}
-          className="flex items-center gap-1 bg-[#333] hover:bg-red-900 text-white px-3 py-1 rounded text-sm transition-colors border border-[#444]"
+          className="chassis-flush-btn"
         >
           <Trash2 size={14} /> Flush
         </button>

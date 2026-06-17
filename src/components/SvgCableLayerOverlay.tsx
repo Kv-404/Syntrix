@@ -71,7 +71,7 @@ export const SvgCableLayerOverlay: React.FC<Props> = ({ activeCable }) => {
   };
 
   return (
-    <svg className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-visible z-20">
+    <svg className="svg-cable-layer">
       {cables.map((cable) => {
         const srcId = `port-${cable.sourceModuleId}-${cable.sourcePort}`;
         const tgtId = `port-${cable.targetModuleId}-${cable.targetPort}`;

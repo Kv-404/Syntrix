@@ -54,10 +54,10 @@ export const ModularEurorackChassis: React.FC<Props> = ({ module, zoom, onPortDr
       case 'VCO':
         return (
           <>
-            <div className="flex flex-col mb-4">
-              <label className="text-[10px] text-gray-400 mb-1">WAVEFORM</label>
+            <div className="chassis-control-group">
+              <label className="chassis-param-label">WAVEFORM</label>
               <select
-                className="bg-[#111] border border-[#444] text-gray-300 text-xs p-1 rounded"
+                className="chassis-select"
                 value={module.parameters.waveform}
                 onChange={(e) => handleParamChange('waveform', e.target.value)}
               >
@@ -67,17 +67,17 @@ export const ModularEurorackChassis: React.FC<Props> = ({ module, zoom, onPortDr
                 <option value="triangle">Triangle</option>
               </select>
             </div>
-            <div className="flex flex-col mb-4 items-center">
-              <label className="text-[10px] text-gray-400 mb-1">DETUNE</label>
+            <div className="chassis-control-group center">
+              <label className="chassis-param-label">DETUNE</label>
               <input
                 type="range" min="-1200" max="1200" step="1"
                 value={module.parameters.detune}
                 onChange={(e) => handleParamChange('detune', parseInt(e.target.value))}
-                className="w-full"
+                className="chassis-range"
               />
-              <span className="text-[10px]">{module.parameters.detune} cents</span>
+              <span className="chassis-param-value">{module.parameters.detune} cents</span>
             </div>
-            <div className="flex justify-around mt-4 pt-4 border-t border-[#444]">
+            <div className="chassis-ports-row">
               <VectorPortJack type="in" label="FM IN" portId="fmIn" moduleId={module.id} onDragStart={onPortDragStart} onDrop={onPortDrop} />
               <VectorPortJack type="out" label="OUT" portId="out" moduleId={module.id} onDragStart={onPortDragStart} onDrop={onPortDrop} />
             </div>
@@ -86,10 +86,10 @@ export const ModularEurorackChassis: React.FC<Props> = ({ module, zoom, onPortDr
       case 'VCF':
         return (
           <>
-            <div className="flex flex-col mb-2">
-              <label className="text-[10px] text-gray-400 mb-1">TYPE</label>
+            <div className="chassis-control-group">
+              <label className="chassis-param-label">TYPE</label>
               <select
-                className="bg-[#111] border border-[#444] text-gray-300 text-xs p-1 rounded"
+                className="chassis-select"
                 value={module.parameters.filterType}
                 onChange={(e) => handleParamChange('filterType', e.target.value)}
               >
@@ -98,25 +98,25 @@ export const ModularEurorackChassis: React.FC<Props> = ({ module, zoom, onPortDr
                 <option value="bandpass">Bandpass</option>
               </select>
             </div>
-            <div className="flex flex-col mb-2 items-center">
-              <label className="text-[10px] text-gray-400 mb-1">CUTOFF</label>
+            <div className="chassis-control-group center">
+              <label className="chassis-param-label">CUTOFF</label>
               <input
                 type="range" min="20" max="20000" step="1"
                 value={module.parameters.cutoff}
                 onChange={(e) => handleParamChange('cutoff', parseInt(e.target.value))}
-                className="w-full"
+                className="chassis-range"
               />
             </div>
-            <div className="flex flex-col mb-2 items-center">
-              <label className="text-[10px] text-gray-400 mb-1">RESONANCE</label>
+            <div className="chassis-control-group center">
+              <label className="chassis-param-label">RESONANCE</label>
               <input
                 type="range" min="0" max="20" step="0.1"
                 value={module.parameters.resonance}
                 onChange={(e) => handleParamChange('resonance', parseFloat(e.target.value))}
-                className="w-full"
+                className="chassis-range"
               />
             </div>
-            <div className="flex justify-around mt-4 pt-4 border-t border-[#444]">
+            <div className="chassis-ports-row">
               <VectorPortJack type="in" label="IN" portId="in" moduleId={module.id} onDragStart={onPortDragStart} onDrop={onPortDrop} />
               <VectorPortJack type="in" label="CV IN" portId="cvIn" moduleId={module.id} onDragStart={onPortDragStart} onDrop={onPortDrop} />
               <VectorPortJack type="out" label="OUT" portId="out" moduleId={module.id} onDragStart={onPortDragStart} onDrop={onPortDrop} />
@@ -126,16 +126,16 @@ export const ModularEurorackChassis: React.FC<Props> = ({ module, zoom, onPortDr
       case 'VCA':
         return (
           <>
-            <div className="flex flex-col mb-4 items-center">
-              <label className="text-[10px] text-gray-400 mb-1">INITIAL GAIN</label>
+            <div className="chassis-control-group center">
+              <label className="chassis-param-label">INITIAL GAIN</label>
               <input
                 type="range" min="0" max="1" step="0.01"
                 value={module.parameters.gain}
                 onChange={(e) => handleParamChange('gain', parseFloat(e.target.value))}
-                className="w-full"
+                className="chassis-range"
               />
             </div>
-            <div className="flex justify-around mt-4 pt-4 border-t border-[#444]">
+            <div className="chassis-ports-row">
               <VectorPortJack type="in" label="IN" portId="in" moduleId={module.id} onDragStart={onPortDragStart} onDrop={onPortDrop} />
               <VectorPortJack type="in" label="CV IN" portId="cvIn" moduleId={module.id} onDragStart={onPortDragStart} onDrop={onPortDrop} />
               <VectorPortJack type="out" label="OUT" portId="out" moduleId={module.id} onDragStart={onPortDragStart} onDrop={onPortDrop} />
@@ -145,10 +145,10 @@ export const ModularEurorackChassis: React.FC<Props> = ({ module, zoom, onPortDr
       case 'LFO':
         return (
           <>
-            <div className="flex flex-col mb-2">
-              <label className="text-[10px] text-gray-400 mb-1">WAVEFORM</label>
+            <div className="chassis-control-group">
+              <label className="chassis-param-label">WAVEFORM</label>
               <select
-                className="bg-[#111] border border-[#444] text-gray-300 text-xs p-1 rounded"
+                className="chassis-select"
                 value={module.parameters.waveform}
                 onChange={(e) => handleParamChange('waveform', e.target.value)}
               >
@@ -158,16 +158,16 @@ export const ModularEurorackChassis: React.FC<Props> = ({ module, zoom, onPortDr
                 <option value="triangle">Triangle</option>
               </select>
             </div>
-            <div className="flex flex-col mb-2 items-center">
-              <label className="text-[10px] text-gray-400 mb-1">RATE (Hz)</label>
+            <div className="chassis-control-group center">
+              <label className="chassis-param-label">RATE (Hz)</label>
               <input
                 type="range" min="0.1" max="50" step="0.1"
                 value={module.parameters.rate}
                 onChange={(e) => handleParamChange('rate', parseFloat(e.target.value))}
-                className="w-full"
+                className="chassis-range"
               />
             </div>
-            <div className="flex justify-around mt-4 pt-4 border-t border-[#444]">
+            <div className="chassis-ports-row">
               <VectorPortJack type="out" label="OUT" portId="out" moduleId={module.id} onDragStart={onPortDragStart} onDrop={onPortDrop} />
             </div>
           </>
@@ -176,17 +176,17 @@ export const ModularEurorackChassis: React.FC<Props> = ({ module, zoom, onPortDr
         return (
           <>
             {['attack', 'decay', 'sustain', 'release'].map(param => (
-              <div key={param} className="flex flex-col mb-2 items-center">
-                <label className="text-[10px] text-gray-400 mb-1 uppercase">{param}</label>
+              <div key={param} className="chassis-control-group center">
+                <label className="chassis-param-label">{param}</label>
                 <input
                   type="range" min="0.01" max={param === 'sustain' ? "1" : "5"} step="0.01"
                   value={module.parameters[param]}
                   onChange={(e) => handleParamChange(param, parseFloat(e.target.value))}
-                  className="w-full"
+                  className="chassis-range"
                 />
               </div>
             ))}
-            <div className="flex justify-around mt-4 pt-4 border-t border-[#444]">
+            <div className="chassis-ports-row">
               <VectorPortJack type="out" label="ENV OUT" portId="out" moduleId={module.id} onDragStart={onPortDragStart} onDrop={onPortDrop} />
             </div>
           </>
@@ -194,22 +194,22 @@ export const ModularEurorackChassis: React.FC<Props> = ({ module, zoom, onPortDr
       case 'Output':
         return (
           <>
-            <div className="flex flex-col mb-4 items-center">
-              <label className="text-[10px] text-gray-400 mb-1">MASTER VOL</label>
+            <div className="chassis-control-group center">
+              <label className="chassis-param-label">MASTER VOL</label>
               <input
                 type="range" min="0" max="1" step="0.01"
                 value={module.parameters.masterGain}
                 onChange={(e) => handleParamChange('masterGain', parseFloat(e.target.value))}
-                className="w-full"
+                className="chassis-range"
               />
             </div>
-            <div className="h-8 w-full bg-[#111] border border-[#333] rounded overflow-hidden flex items-end p-0.5">
+            <div className="chassis-vu-meter">
               <div
-                className="w-full bg-green-500 transition-all duration-75"
+                className="chassis-vu-level"
                 style={{ height: `${module.parameters.masterGain * 100}%` }}
               ></div>
             </div>
-            <div className="flex justify-around mt-4 pt-4 border-t border-[#444]">
+            <div className="chassis-ports-row">
               <VectorPortJack type="in" label="L/R IN" portId="in" moduleId={module.id} onDragStart={onPortDragStart} onDrop={onPortDrop} />
             </div>
           </>
@@ -219,7 +219,7 @@ export const ModularEurorackChassis: React.FC<Props> = ({ module, zoom, onPortDr
 
   return (
     <div
-      className="absolute rack-panel w-40 flex flex-col items-center p-2 shadow-2xl pointer-events-auto cursor-grab active:cursor-grabbing"
+      className="rack-panel-container rack-panel"
       style={{
         transform: `translate(${module.x}px, ${module.y}px)`,
         zIndex: 10
@@ -228,26 +228,26 @@ export const ModularEurorackChassis: React.FC<Props> = ({ module, zoom, onPortDr
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
     >
-      <div className="w-full flex justify-between px-1 mb-2">
+      <div className="rack-screws top">
         <div className="screw"></div>
         <div className="screw"></div>
       </div>
 
-      <div className="w-full flex justify-between items-center mb-4 border-b border-[#444] pb-1">
-        <span className="font-bold tracking-widest text-sm text-gray-300">{module.type}</span>
+      <div className="rack-header">
+        <span className="rack-title">{module.type}</span>
         <button
           onClick={() => removeModule(module.id)}
-          className="text-gray-600 hover:text-red-500 transition-colors"
+          className="rack-close-btn"
         >
           ×
         </button>
       </div>
 
-      <div className="w-full flex-grow flex flex-col">
+      <div className="rack-body">
         {renderControls()}
       </div>
 
-      <div className="w-full flex justify-between px-1 mt-4">
+      <div className="rack-screws bottom">
         <div className="screw"></div>
         <div className="screw"></div>
       </div>

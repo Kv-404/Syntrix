@@ -30,25 +30,20 @@ export const VectorPortJack: React.FC<Props> = ({ type, label, portId, moduleId,
     }
   };
 
-  const handlePointerEnter = () => {
-    // Hover state could be added here
-  };
-
   return (
-    <div className="flex flex-col items-center port-jack">
-      <span className="text-[9px] text-gray-400 mb-1 tracking-wider">{label}</span>
+    <div className="port-jack-container port-jack">
+      <span className="port-jack-label">{label}</span>
       <div
         ref={ref}
         id={`port-${moduleId}-${portId}`}
-        className="w-6 h-6 rounded-full bg-[#111] border-2 border-[#555] shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)] flex items-center justify-center cursor-crosshair hover:border-gray-300 transition-colors"
+        className="port-jack-socket"
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
-        onPointerEnter={handlePointerEnter}
         data-module={moduleId}
         data-port={portId}
         title={type === 'in' ? 'Input' : 'Output'}
       >
-        <div className="w-2 h-2 rounded-full bg-black"></div>
+        <div className="port-jack-hole"></div>
       </div>
     </div>
   );

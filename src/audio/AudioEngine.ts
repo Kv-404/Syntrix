@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, prefer-const, no-case-declarations, @typescript-eslint/no-unused-vars, no-empty */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useSynthStore } from '../store/useSynthStore';
 
 export class AudioEngine {
@@ -12,8 +12,18 @@ export class AudioEngine {
 
   private constructor() {
     this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    
+    // Add a transparent limiter to prevent clipping when playing polyphonically
+    const compressor = this.audioContext.createDynamicsCompressor();
+    compressor.threshold.value = -0.5; // Only engage near clipping
+    compressor.knee.value = 0.0; // Hard knee
+    compressor.ratio.value = 20; // Brickwall
+    compressor.attack.value = 0.001; // Fast attack
+    compressor.release.value = 0.1; // Fast release
+    
     this.masterGain = this.audioContext.createGain();
-    this.masterGain.connect(this.audioContext.destination);
+    this.masterGain.connect(compressor);
+    compressor.connect(this.audioContext.destination);
     
     // Subscribe to master volume changes
     useSynthStore.subscribe((state) => {
@@ -67,11 +77,17 @@ export class AudioEngine {
     const now = this.audioContext.currentTime;
     voiceContext.modules.forEach((modNode: any) => {
       if (modNode.type === 'ADSR') {
-        const { attack } = modNode.params;
+        const { attack, decay, sustain } = modNode.params;
         const gate = modNode.gateOutput as ConstantSourceNode;
         gate.offset.cancelScheduledValues(now);
         gate.offset.setValueAtTime(0, now);
-        gate.offset.linearRampToValueAtTime(1, now + (attack || 0.01));
+        
+        const a = attack || 0.01;
+        const d = decay || 0.1;
+        const s = sustain ?? 0.5;
+        
+        gate.offset.linearRampToValueAtTime(1, now + a);
+        gate.offset.linearRampToValueAtTime(s, now + a + d);
       }
     });
   }

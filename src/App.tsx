@@ -9,7 +9,7 @@ function App() {
   }, []);
 
   return (
-    <div className="w-full h-screen bg-[#121212] text-[#e5e5e5] overflow-hidden flex flex-col font-sans">
+    <div className="app-container">
       <SynthConsole />
     </div>
   );
