@@ -219,7 +219,7 @@ export const ModularEurorackChassis: React.FC<Props> = ({ module, zoom, onPortDr
 
   return (
     <div
-      className="rack-panel-container rack-panel"
+      className="rack-panel-container"
       style={{
         transform: `translate(${module.x}px, ${module.y}px)`,
         zIndex: 10

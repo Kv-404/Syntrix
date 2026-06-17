@@ -2,7 +2,7 @@
 
 A fully browser-based modular audio synthesizer built with **React 19**, **Zustand**, and the native **Web Audio API**. No backend, no database — everything runs in-memory inside the browser.
 
-Drag modules onto an infinite canvas, patch them together with virtual cables, and play the built-in keyboard to sculpt sound in real time.
+Drag modules onto an infinite canvas, patch them together with virtual cables, load presets, and play the on-screen keyboard to sculpt sound in real time.
 
 ---
 
@@ -10,6 +10,7 @@ Drag modules onto an infinite canvas, patch them together with virtual cables, a
 
 - [Features](#features)
 - [Architecture](#architecture)
+- [Presets](#presets)
 - [Module Reference](#module-reference)
 - [Keyboard Shortcuts](#keyboard-shortcuts)
 - [Getting Started](#getting-started)
@@ -27,14 +28,16 @@ Drag modules onto an infinite canvas, patch them together with virtual cables, a
 | **Modular Routing** | Drag-and-drop VCO, VCF, VCA, LFO, ADSR, and Output modules onto an infinite pannable/zoomable canvas |
 | **Patch Cables** | Connect modules via SVG Bézier-curve cables by dragging from output jacks to input jacks |
 | **Polyphonic Playback** | Play multiple notes simultaneously with independent per-note voice graphs |
+| **Preset System** | Dropdown menu with 5 ready-to-play patches — Basic Lead, Fat Bass, Dreamy Pad, Pluck, and Space Drone |
 | **Brickwall Limiter** | A transparent `DynamicsCompressorNode` prevents digital clipping during polyphonic playback |
 | **ADSR Envelope** | Full Attack → Decay → Sustain → Release envelope shaping per voice |
 | **Real-Time Telemetry** | Header HUD displays sample rate, active voice count, total audio nodes, cable count, and DSP latency |
-| **Undo / Redo** | Full undo/redo history for module and cable operations |
+| **Undo / Redo** | Full undo/redo history (capped at 50 entries) for module and cable operations |
 | **Patch Export** | Export the current module + cable state as a downloadable JSON file |
 | **Persistent State** | Workbench layout is automatically saved to `localStorage` via Zustand `persist` middleware |
-| **Keyboard Input** | 25-key QWERTY keyboard mapping spanning two octaves (C3–C5) |
-| **Panic Mute** | Instantly silence all active voices with one click |
+| **Keyboard Input** | Ableton-standard dual-row keyboard mapping spanning 2.5 octaves (C3–F5) |
+| **Panic Mute** | Instantly silence all active voices, reset master gain, and clear stuck keys with one click |
+| **Tutorial** | Built-in quick-start guide accessible from the toolbar |
 
 ---
 
@@ -45,7 +48,7 @@ Drag modules onto an infinite canvas, patch them together with virtual cables, a
 │                   SynthConsole                    │
 │  ┌─────────────┐  ┌──────────────────────────┐   │
 │  │ Telemetry   │  │   ChassisActionStrip     │   │
-│  │ HUD         │  │   (Spawn / Undo / Panic) │   │
+│  │ HUD         │  │  (Presets / Spawn / Panic)│   │
 │  └─────────────┘  └──────────────────────────┘   │
 │  ┌───────────────────────────────────────────┐   │
 │  │            PatchBayStage                  │   │
@@ -71,6 +74,20 @@ Drag modules onto an infinite canvas, patch them together with virtual cables, a
 2. On `noteOn`, the `AudioEngine` reads the current store snapshot and builds a fresh Web Audio graph for that voice.
 3. Cables in the store determine how audio nodes are connected.
 4. On `noteOff`, the ADSR release phase plays out, then the voice nodes are disconnected and garbage collected.
+
+---
+
+## Presets
+
+Select a preset from the dropdown in the toolbar to instantly load a pre-patched synthesizer configuration:
+
+| Preset | Description |
+|---|---|
+| **Basic Lead** | Single sawtooth VCO → VCA with a snappy ADSR envelope |
+| **Fat Bass** | Two detuned oscillators (square + saw) through a resonant lowpass filter |
+| **Dreamy Pad** | Triangle wave through an LFO-modulated filter with slow attack and long release |
+| **Pluck** | Sawtooth through a tight lowpass filter with very fast decay — percussive and bright |
+| **Space Drone** | Dual detuned oscillators with slow LFO filter sweep, long attack and 4-second release |
 
 ---
 
@@ -118,9 +135,9 @@ The final destination that routes audio to the speakers.
 
 ## Keyboard Shortcuts
 
-The on-screen piano keyboard maps to your QWERTY keyboard across two octaves:
+The on-screen piano keyboard uses the **Ableton Live standard** dual-row QWERTY layout, spanning 2.5 octaves (C3–F5). Every visible key has a shortcut assigned.
 
-### Lower Octave (C3 – B3)
+### Lower Row — C3 to E4
 
 | Note | Key | | Note | Key |
 |------|-----|-|------|-----|
@@ -131,7 +148,7 @@ The on-screen piano keyboard maps to your QWERTY keyboard across two octaves:
 | E3   | C   | | A#3  | J   |
 | F3   | V   | | B3   | M   |
 
-### Upper Octave (C4 – C5)
+### Upper Row — C4 to F5
 
 | Note | Key | | Note | Key |
 |------|-----|-|------|-----|
@@ -142,8 +159,13 @@ The on-screen piano keyboard maps to your QWERTY keyboard across two octaves:
 | E4   | E   | | A#4  | 7   |
 | F4   | R   | | B4   | U   |
 |      |     | | C5   | I   |
+|      |     | | C#5  | 9   |
+|      |     | | D5   | O   |
+|      |     | | D#5  | 0   |
+|      |     | | E5   | P   |
+|      |     | | F5   | [   |
 
-> The piano keys display only the keyboard shortcut letter (not the note name) for quick visual reference.
+> **Note:** Keyboard shortcuts are automatically disabled when you are focused on a module control (dropdown, slider, etc.) so they don't interfere with parameter editing.
 
 ---
 
@@ -151,7 +173,7 @@ The on-screen piano keyboard maps to your QWERTY keyboard across two octaves:
 
 ### Prerequisites
 
-- **Node.js** ≥ 18 (tested with v24)
+- **Node.js** ≥ 18
 - **npm** ≥ 9
 
 ### Install & Run
@@ -183,30 +205,30 @@ npm run preview
 
 ```
 synth-app/
-├── index.html                  # Entry HTML with SEO metadata
+├── index.html                  # Entry HTML with SEO metadata & favicon
 ├── package.json                # Dependencies and scripts
 ├── vite.config.ts              # Vite configuration
 ├── tsconfig.json               # TypeScript project references
 ├── public/
-│   ├── favicon.svg             # Browser tab icon
-│   └── icons.svg               # UI icon sprites
+│   └── favicon.png             # Custom neon synth browser tab icon
 └── src/
     ├── main.tsx                # React DOM entry point
     ├── App.tsx                 # Root component (initializes AudioEngine)
-    ├── index.css               # Complete vanilla CSS stylesheet
+    ├── index.css               # Complete vanilla CSS design system
     ├── audio/
     │   └── AudioEngine.ts      # Singleton Web Audio API engine
     ├── store/
-    │   └── useSynthStore.ts    # Zustand state store with undo/redo
+    │   └── useSynthStore.ts    # Zustand state store with undo/redo & persistence
     └── components/
         ├── SynthConsole.tsx         # Top-level layout shell
-        ├── SynthTelemetryHUD.tsx    # Real-time audio metrics display
-        ├── ChassisActionStrip.tsx   # Toolbar (spawn, undo, panic, flush)
+        ├── SynthTelemetryHUD.tsx    # Real-time audio metrics + patch export
+        ├── ChassisActionStrip.tsx   # Unified toolbar (presets, spawn, undo, panic, flush)
         ├── PatchBayStage.tsx        # Infinite canvas with pan & zoom
         ├── ModularEurorackChassis.tsx # Individual module UI panel
         ├── VectorPortJack.tsx       # Input/output jack connector
         ├── SvgCableLayerOverlay.tsx  # SVG Bézier patch cable renderer
-        └── GlobalKeyboardGrid.tsx   # On-screen piano keyboard
+        ├── GlobalKeyboardGrid.tsx   # On-screen piano keyboard (Ableton layout)
+        └── TutorialModal.tsx        # Quick-start guide modal
 ```
 
 ---
@@ -228,6 +250,8 @@ ADSR (ENV OUT) → VCA (CV IN)
 
 This routes the oscillator through a filter, then through an amplifier controlled by the envelope, and finally to the speakers.
 
+> **Tip:** Or just select a preset from the dropdown and start playing immediately!
+
 ---
 
 ## Technology Stack
@@ -235,19 +259,22 @@ This routes the oscillator through a filter, then through an amplifier controlle
 | Layer | Technology | Purpose |
 |---|---|---|
 | **UI Framework** | React 19 | Component rendering and event handling |
-| **State** | Zustand 5 | Centralized in-memory state with persistence and undo/redo |
+| **State** | Zustand 5 | Centralized state with localStorage persistence and undo/redo (50-entry cap) |
 | **Audio** | Web Audio API | Real-time audio graph construction and DSP |
-| **Styling** | Vanilla CSS | 12pt Times New Roman typography, hardware-inspired dark theme |
+| **Styling** | Vanilla CSS | Flat dark theme with Inter/Outfit/JetBrains Mono typography |
 | **Icons** | Lucide React | Lightweight SVG icon library |
-| **Bundler** | Vite 8 | Fast HMR development server and optimized production builds |
-| **Language** | TypeScript 6 | Static typing across all source files |
+| **Bundler** | Vite | Fast HMR development server and optimized production builds |
+| **Language** | TypeScript | Static typing across all source files |
 
 ---
 
 ## Design Decisions
 
-- **No Tailwind CSS.** All styling uses vanilla CSS to maintain strict control over the 12pt Times New Roman typography requirement across every UI element.
-- **Per-note voice allocation.** Each `noteOn` creates a completely independent Web Audio graph. This is more expensive than sharing oscillators, but it correctly models how real modular synthesizers work — each voice is a separate signal path.
+- **No Tailwind CSS.** All styling uses vanilla CSS with a curated design system (Inter for UI, Outfit for headings, JetBrains Mono for telemetry data).
+- **Per-note voice allocation.** Each `noteOn` creates a completely independent Web Audio graph. This correctly models how real modular synthesizers work — each voice is a separate signal path.
 - **Brickwall limiter on master output.** A `DynamicsCompressorNode` with a `-0.5 dB` threshold and `20:1` ratio acts as a transparent safety net against digital clipping when multiple voices sum together.
 - **No external audio libraries.** The entire audio engine is built directly on the browser's native `AudioContext`, `OscillatorNode`, `BiquadFilterNode`, `GainNode`, `ConstantSourceNode`, and `DynamicsCompressorNode`.
-- **DOM-based port position tracking.** `SvgCableLayerOverlay` uses a `requestAnimationFrame` loop to read port jack DOM positions and convert them to canvas coordinates, rather than manually computing positions from module state. This keeps cable endpoints perfectly synchronized even during drag operations.
+- **DOM-based port position tracking.** `SvgCableLayerOverlay` uses a `requestAnimationFrame` loop to read port jack DOM positions and convert them to canvas coordinates. This keeps cable endpoints perfectly synchronized during drag operations.
+- **Panic with full state reset.** The Panic Mute button doesn't just stop oscillators — it clamps master gain to zero, purges all voice graphs, resets the node counter, and dispatches a custom event to clear visually stuck keyboard keys.
+- **Keyboard isolation.** Key events are suppressed when the user is focused on a form control (`<input>`, `<select>`, `<textarea>`) to prevent accidental note triggering while editing module parameters.
+- **Undo history cap.** The undo stack is limited to 50 entries to prevent unbounded memory growth during long sessions.

@@ -2,6 +2,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+const MAX_HISTORY = 50;
+
 export type ModuleType = 'VCO' | 'VCF' | 'VCA' | 'LFO' | 'ADSR' | 'Output';
 
 export interface ModuleState {
@@ -50,6 +52,7 @@ export interface SynthState {
   saveHistory: () => void;
   
   flushWorkbench: () => void;
+  loadPreset: (modules: ModuleState[], cables: CableState[]) => void;
 }
 
 const initialModules: ModuleState[] = [
@@ -71,7 +74,10 @@ export const useSynthStore = create<SynthState>()(
       
       saveHistory: () => {
         const { modules, cables, past } = get();
-        set({ past: [...past, { modules: JSON.parse(JSON.stringify(modules)), cables: JSON.parse(JSON.stringify(cables)) }], future: [] });
+        const newPast = [...past, { modules: JSON.parse(JSON.stringify(modules)), cables: JSON.parse(JSON.stringify(cables)) }];
+        // Cap at MAX_HISTORY to prevent unbounded memory growth
+        if (newPast.length > MAX_HISTORY) newPast.splice(0, newPast.length - MAX_HISTORY);
+        set({ past: newPast, future: [] });
       },
       
       undo: () => {
@@ -147,6 +153,11 @@ export const useSynthStore = create<SynthState>()(
       flushWorkbench: () => {
         get().saveHistory();
         set({ modules: initialModules, cables: [] });
+      },
+      
+      loadPreset: (modules, cables) => {
+        get().saveHistory();
+        set({ modules, cables });
       }
     }),
     {

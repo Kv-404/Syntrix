@@ -22,6 +22,7 @@ export class AudioEngine {
     compressor.release.value = 0.1; // Fast release
     
     this.masterGain = this.audioContext.createGain();
+    
     this.masterGain.connect(compressor);
     compressor.connect(this.audioContext.destination);
     
@@ -52,6 +53,22 @@ export class AudioEngine {
   public panic() {
     this.activeVoices.forEach(voice => this.cleanupVoice(voice));
     this.activeVoices.clear();
+    this.totalNodes = 0; // Hard reset after full purge
+    
+    // Immediately clamp master volume
+    const now = this.audioContext.currentTime;
+    this.masterGain.gain.cancelScheduledValues(now);
+    this.masterGain.gain.setValueAtTime(0, now);
+    
+    // Restore master volume after 100ms
+    setTimeout(() => {
+      const state = useSynthStore.getState();
+      const outputModule = state.modules.find(m => m.type === 'Output');
+      this.masterGain.gain.setTargetAtTime(outputModule?.parameters.masterGain || 0.8, this.audioContext.currentTime, 0.05);
+    }, 100);
+
+    // Dispatch event to clear visual stuck keys in GlobalKeyboardGrid
+    window.dispatchEvent(new Event('synth-panic'));
   }
 
   private updateTelemetry() {
@@ -96,13 +113,17 @@ export class AudioEngine {
     const voiceContext = this.activeVoices.get(note);
     if (!voiceContext) return;
 
+    // Immediately remove from activeVoices to prevent new noteOn events
+    // from overwriting the voiceContext while it's releasing.
+    this.activeVoices.delete(note);
+
     const now = this.audioContext.currentTime;
     let maxRelease = 0.05;
 
     // Trigger Release
     voiceContext.modules.forEach((modNode: any) => {
       if (modNode.type === 'ADSR') {
-        const { release } = modNode.params;
+        const release = modNode.params.release ?? 0.2;
         if (release > maxRelease) maxRelease = release;
         const gate = modNode.gateOutput as ConstantSourceNode;
         gate.offset.cancelScheduledValues(now);
@@ -113,16 +134,18 @@ export class AudioEngine {
 
     setTimeout(() => {
       this.cleanupVoice(voiceContext);
-      this.activeVoices.delete(note);
     }, maxRelease * 1000 + 100);
   }
 
   private cleanupVoice(voiceContext: any) {
+    if (voiceContext.cleanedUp) return;
+    voiceContext.cleanedUp = true;
     voiceContext.nodes.forEach((node: any) => {
-      try { node.stop(); } catch(e) {}
-      node.disconnect();
+      try { node.stop(); } catch(e) { /* node may not be stoppable */ }
+      try { node.disconnect(); } catch(e) { /* already disconnected */ }
       this.totalNodes--;
     });
+    if (this.totalNodes < 0) this.totalNodes = 0; // Safety clamp
   }
 
   private createVoiceGraph(modules: any[], cables: any[], frequency: number) {
@@ -170,10 +193,10 @@ export class AudioEngine {
 
         case 'VCA':
           audioNode = this.audioContext.createGain();
-          audioNode.gain.value = params.gain || 0; // Starts silent, opens via CV
+          audioNode.gain.value = params.gain ?? 0; // Starts silent, opens via CV
           
           auxNode = this.audioContext.createGain();
-          auxNode.gain.value = params.envelopeAmount || 1;
+          auxNode.gain.value = params.envelopeAmount ?? 1;
           auxNode.connect(audioNode.gain);
 
           modMap.set(m.id, { type: 'VCA', in: audioNode, out: audioNode, cvIn: auxNode, node: audioNode });
@@ -242,6 +265,6 @@ export class AudioEngine {
       }
     });
 
-    return { modules: modMap, nodes };
+    return { modules: modMap, nodes, cleanedUp: false };
   }
 }
