@@ -1,20 +1,18 @@
-import React, { useRef } from 'react';
+import React, { useRef } from "react";
 
-interface Props {
-  type: 'in' | 'out';
-  label: string;
-  portId: string;
-  moduleId: string;
-  onDragStart: (port: string, x: number, y: number) => void;
-  onDrop: (port: string) => void;
-}
+export const VectorPortJack = ({
+  type,
+  label,
+  portId,
+  moduleId,
+  onDragStart,
+  onDrop,
+}) => {
+  const ref = useRef(null);
 
-export const VectorPortJack: React.FC<Props> = ({ type, label, portId, moduleId, onDragStart, onDrop }) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  const handlePointerDown = (e: React.PointerEvent) => {
+  const handlePointerDown = (e) => {
     e.stopPropagation();
-    if (type === 'out') {
+    if (type === "out") {
       // Start dragging a cable from an output
       if (ref.current) {
         // We will pass the initial screen coordinates, which PatchBayStage will convert
@@ -23,9 +21,9 @@ export const VectorPortJack: React.FC<Props> = ({ type, label, portId, moduleId,
     }
   };
 
-  const handlePointerUp = (e: React.PointerEvent) => {
+  const handlePointerUp = (e) => {
     e.stopPropagation();
-    if (type === 'in') {
+    if (type === "in") {
       onDrop(portId);
     }
   };
@@ -41,7 +39,7 @@ export const VectorPortJack: React.FC<Props> = ({ type, label, portId, moduleId,
         onPointerUp={handlePointerUp}
         data-module={moduleId}
         data-port={portId}
-        title={type === 'in' ? 'Input' : 'Output'}
+        title={type === "in" ? "Input" : "Output"}
       >
         <div className="port-jack-hole"></div>
       </div>

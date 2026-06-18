@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import { SynthConsole } from './components/SynthConsole';
-import { AudioEngine } from './audio/AudioEngine';
+import { useEffect } from "react";
+import { SynthConsole } from "./components/SynthConsole";
+import { AudioEngine } from "./audio/AudioEngine";
 
 function App() {
   useEffect(() => {

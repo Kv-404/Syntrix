@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { ChassisActionStrip } from './ChassisActionStrip';
-import { PatchBayStage } from './PatchBayStage';
-import { GlobalKeyboardGrid } from './GlobalKeyboardGrid';
-import { SynthTelemetryHUD } from './SynthTelemetryHUD';
-import { TutorialModal } from './TutorialModal';
+import React, { useState } from "react";
+import { ChassisActionStrip } from "./ChassisActionStrip";
+import { PatchBayStage } from "./PatchBayStage";
+import { GlobalKeyboardGrid } from "./GlobalKeyboardGrid";
+import { SynthTelemetryHUD } from "./SynthTelemetryHUD";
+import { TutorialModal } from "./TutorialModal";
 
-export const SynthConsole: React.FC = () => {
+export const SynthConsole = () => {
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
 
   return (
@@ -14,15 +14,18 @@ export const SynthConsole: React.FC = () => {
         <h1 className="synth-console-title">Syntrix</h1>
         <SynthTelemetryHUD />
       </header>
-      
+
       <ChassisActionStrip onOpenTutorial={() => setIsTutorialOpen(true)} />
-      
+
       <main className="synth-console-main">
         <PatchBayStage />
       </main>
-      
+
       <GlobalKeyboardGrid />
-      <TutorialModal isOpen={isTutorialOpen} onClose={() => setIsTutorialOpen(false)} />
+      <TutorialModal
+        isOpen={isTutorialOpen}
+        onClose={() => setIsTutorialOpen(false)}
+      />
     </div>
   );
 };
